@@ -1,0 +1,70 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+// schema.prisma
+
+// Modèle de données pour la gestion des factures
+// Utilisation de PostgreSQL comme base de données
+
+
+model Client {
+  id          Int        @id @default(autoincrement())
+  nom         String
+  email       String     @unique
+  telephone   String?
+  adresse     String?
+  factures    Facture[]
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Facture {
+  id          Int             @id @default(autoincrement())
+  numero      String          @unique
+  date        DateTime        @default(now())
+  clientId    Int
+  client      Client          @relation(fields: [clientId], references: [id])
+  lignes      LigneFacture[]
+  pdf         Pdf?            @relation(fields: [pdfId], references: [id])
+  pdfId       Int?            @unique
+
+  totalHT     Float
+  totalTTC    Float
+  tva         Float
+
+  statut      StatutFacture   @default(EN_ATTENTE)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model LigneFacture {
+  id          Int       @id @default(autoincrement())
+  factureId   Int
+  facture     Facture   @relation(fields: [factureId], references: [id])
+
+  description String
+  quantite    Int
+  prixUnitaire Float
+  total       Float
+}
+
+model Pdf {
+  id          Int       @id @default(autoincrement())
+  url         String    // URL vers le fichier PDF (ex : S3, local, etc.)
+  facture     Facture?
+
+  createdAt   DateTime  @default(now())
+}
+
+enum StatutFacture {
+  EN_ATTENTE
+  PAYEE
+  ANNULEE
+}
