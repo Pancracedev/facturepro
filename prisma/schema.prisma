@@ -24,6 +24,23 @@ model Client {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 }
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  password       String
+  name           String?
+  role           Role     @default(USER)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Ajoute d'autres relations ou champs personnalisés ici
+}
+
+// Enum pour la gestion des rôles (utile pour l'admin, etc.)
+enum Role {
+  USER
+  ADMIN
+}
 
 model Facture {
   id          Int             @id @default(autoincrement())
