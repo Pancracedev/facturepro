@@ -1,50 +1,34 @@
-// export { auth as middleware } from "@/auth"
-// export { auth as middleware } from "@/auth"
-import { NextResponse,NextRequest } from "next/server"
+import { getToken } from "next-auth/jwt";
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/auth";
+
+       
+export async function middleware(request: NextRequest) {
+  const  path = request.nextUrl.pathname;
+  const session  = await auth();
+  console.log("voici la session", session)
+  const token = await getToken({ req:request, secret: process.env.AUTH_SECRET });
+
+  console.log("voici le token", token)
+  // Routes publiques
+  const publicPaths = ["/auth/signin", "/auth/signup", "/auth/error",];
+
+  const isPublic = publicPaths.some((p) => path.startsWith(p));
 
 
+  if (!token && !isPublic) {
+    console.log("Utilisateur non authentifié, redirection vers la page de connexion");
+    return NextResponse.redirect(new URL("/auth/signin", request.url));
+  }
 
-export function middleware(request: NextRequest) {
-    
-  return NextResponse.next()
+  return NextResponse.next();
 }
 
 export const config = {
-    matcher: [
-      /*
-       * Appliquer à toutes les routes sauf :
-       * - /_next
-       * - /static
-       * - /favicon.ico
-       * - /images/
-       * - etc.
-      */
-      "/((?!_next/static|_next/image|favicon.ico|images|api/public).*)",
-    ],
-  }
-// // middleware.ts
-// export const config = {
-//     matcher: [
-//       "/",              // la page d'accueil
-//       "/dashboard/:path*", // si tu en as
-//       "/profile/:path*",   // etc.
-//       "/auth/:path*",      // pour empêcher accès à /auth si déjà connecté
-//     ],
-//   }
-// //   import { cookies } from "next/headers"
-
-// //   export async function POST(req: Request) {
-// //     const res = NextResponse.redirect(new URL("/", req.url))
-// //     const body = await req.json()
-  
-// //     // Exemple : set un cookie après vérification
-// //     res.cookies.set("token", "valeurDuToken", {
-// //       httpOnly: true,
-// //       secure: true,
-// //       maxAge: 60 * 60 * 24,
-// //       path: "/",
-// //     })
-  
-// //     return res
-// //   }
-    
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico).*)", // Exclut les API, les fichiers statiques, les images, le favicon
+    "/auth/signin",  // Cette route est maintenant exclue du middleware de redirection
+    "/auth/signup",
+    "/auth/error"
+  ]
+};
