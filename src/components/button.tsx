@@ -11,7 +11,7 @@ interface AuthButtonProps {
 const AuthButton: React.FC<AuthButtonProps> = ({
   children,
   onClick,
-  type = "button",
+  type,
   className = "",
   disabled = false,
 }) => (

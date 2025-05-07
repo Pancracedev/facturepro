@@ -3,12 +3,15 @@ import { FileText, Github, Mail } from "lucide-react"
 import Link from "next/link"
 import AuthButton from "@/src/components/button"
 import InputField from "@/src/components/input" 
-import { signIn } from "@/auth"
+import { signIn } from "next-auth/react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { signInAction } from "@/app/actions/auth"
 
-export default function LoginForm (){
+
+
+export default  function LoginForm (){
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -31,11 +34,13 @@ export default function LoginForm (){
     try {
       await signIn("google")
     } catch (err) {
+      console.log(err)
       setError("Erreur de connexion avec Google.")
     } finally {
       setIsLoading(false)
     }
   }
+
 
   const handleSubmit = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
@@ -143,6 +148,7 @@ export default function LoginForm (){
 
             <div className="mt-6 grid grid-cols-2 gap-3">
               <AuthButton
+              type="button"
                 onClick={handleGithubSignIn}
                 className="bg-white border border-gray-300 text-gray-500 hover:bg-gray-50"
               >
@@ -151,6 +157,7 @@ export default function LoginForm (){
               </AuthButton>
 
               <AuthButton
+              type="button"
                 onClick={handleGoogleSignIn}
                 className="bg-white border border-gray-300 text-gray-500 hover:bg-gray-50"
               >
