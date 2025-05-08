@@ -1,4 +1,3 @@
-import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 
@@ -11,7 +10,7 @@ export async function middleware(request: NextRequest) {
 
   console.log("voici la session", session)
   // Routes publiques
-  const publicPaths = ["/auth/signin", "/auth/signup", "/auth/error",];
+  const publicPaths = ["/auth/signin", "/auth/signup", "/auth/error","/home","/marketing"];
 
   const isPublic = publicPaths.some((p) => path.startsWith(p));
 
