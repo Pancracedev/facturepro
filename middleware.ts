@@ -7,16 +7,16 @@ export async function middleware(request: NextRequest) {
   const  path = request.nextUrl.pathname;
   const session  = await auth();
   console.log("voici la session", session)
-  const token = await getToken({ req:request, secret: process.env.AUTH_SECRET });
+  //const token = await getToken({ req:request, secret: process.env.AUTH_SECRET });
 
-  console.log("voici le token", token)
+  console.log("voici la session", session)
   // Routes publiques
   const publicPaths = ["/auth/signin", "/auth/signup", "/auth/error",];
 
   const isPublic = publicPaths.some((p) => path.startsWith(p));
 
 
-  if (!token && !isPublic) {
+  if (!session && !isPublic) {
     console.log("Utilisateur non authentifié, redirection vers la page de connexion");
     return NextResponse.redirect(new URL("/auth/signin", request.url));
   }
