@@ -59,13 +59,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     maxAge: 60  
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id
-        token.email = user.email
+        token.email = user.email ?? ""
+        token.accessToken = account?.access_token
       }
       return token
     },
+    async session({ session, token }) {
+      session.user.id = token.id as string
+      session.user.accessToken = token.accessToken as string | undefined
+      return session
+    },
+    
     async signIn({ user, account, profile }: { user: any; account?: any; profile?: any }) {
       const email = profile!.email;
 
