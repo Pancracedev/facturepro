@@ -1,4 +1,5 @@
 'use client'
+import { useEffect } from "react"
 import { FileText, Github, Mail } from "lucide-react"
 import Link from "next/link"
 import AuthButton from "@/src/components/button"
@@ -7,18 +8,38 @@ import { signIn } from "next-auth/react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { signInAction } from "@/app/actions/auth"
+import { useSearchParams } from 'next/navigation';
 
+const errorMessages: Record<string, string> = {
+  Configuration: "Erreur de configuration du serveur d’authentification.",
+  CredentialsSignin: "Email ou mot de passe incorrect.",
+  OAuthSignin: "Connexion avec le provider échouée.",
+  OAuthCallback: "Erreur de retour de provider.",
+  OAuthCreateAccount: "Impossible de créer un compte avec ce provider.",
+  EmailCreateAccount: "Erreur lors de l’envoi de l’email de connexion.",
+  Callback: "Erreur de callback.",
+  Default: "Une erreur inconnue est survenue. Réessayez plus tard.",
+};
 
 
 export default  function LoginForm (){
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
+  const [rememberMe, setRememberMe] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const router  = useRouter()
+  const [isLoading, setIsLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const errorParam = searchParams.get("error");
 
+ 
+
+  useEffect(() => {
+    if (errorParam) {
+      setError(errorMessages[errorParam] || errorMessages["Default"]);
+    }
+  }, [errorParam]);
   const handleGithubSignIn = async () => {
     setIsLoading(true)
     try {
@@ -117,6 +138,7 @@ export default  function LoginForm (){
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
+                  onChange={(e) => setRememberMe(e.target.checked)}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
                 <span className="ml-2">Se souvenir de moi</span>
