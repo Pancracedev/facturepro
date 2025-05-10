@@ -1,4 +1,4 @@
-import NextAuth from "next-auth"
+import NextAuth, { CredentialsSignin } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
 import GithubProvider from "next-auth/providers/github"
@@ -13,6 +13,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: {},
         password: {},
+        remember: { label: "Se souvenir de moi", type: "checkbox" },  
       },
       authorize: async (credentials) => {
         if (!credentials?.email || !credentials.password) {
@@ -22,13 +23,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const user = await getUserFromDb(credentials.email as string)
 
         if (!user) {
-          throw new Error("Utilisateur non trouvé.")
+          
+
+          throw new CredentialsSignin("invalid_credentials"); // redirigé proprement vers /auth/error?error=CredentialsSignin
+
         }
 
         const isValid = await verifyPassword(credentials.password as string, user.password)
 
         if (!isValid) {
-          throw new Error("Mot de passe invalide.")
+          throw new CredentialsSignin(); // redirigé proprement vers /auth/error?error=CredentialsSignin
+
         }
 
         return user;
