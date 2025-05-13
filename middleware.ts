@@ -8,7 +8,6 @@ export async function middleware(request: NextRequest) {
   console.log("voici la session", session)
   //const token = await getToken({ req:request, secret: process.env.AUTH_SECRET });
 
-  console.log("voici la session", session)
   // Routes publiques
   const publicPaths = ["/auth/signin", "/auth/signup", "/auth/error","/home","/marketing"];
 
