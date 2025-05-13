@@ -196,8 +196,7 @@ import Link from "next/link";
 import AuthButton from "@/src/components/button";
 import InputField from "@/src/components/input"; 
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { signInAction } from "@/app/actions/auth";
+
 import { useSearchParams } from 'next/navigation';
 
 const errorMessages: Record<string, string> = {
@@ -211,7 +210,7 @@ const errorMessages: Record<string, string> = {
   Default: "Une erreur inconnue est survenue. Réessayez plus tard.",
 };
 
-export  function LoginForm() {
+const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState<boolean>(false);
